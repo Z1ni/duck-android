@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.util.Log;
 
 import net.markmakinen.duckclient.backend.BackendClient;
+import net.markmakinen.duckclient.backend.GotSightingsListener;
 import net.markmakinen.duckclient.backend.GotSpeciesListener;
+import net.markmakinen.duckclient.model.Sighting;
 import net.markmakinen.duckclient.model.Species;
 
 import java.io.IOException;
@@ -35,6 +37,20 @@ public class MainActivity extends AppCompatActivity {
                     Log.e("DuckClient", "Species getting failed with error: " + msg);
                 }
             });
+
+            bc.getSightings(new GotSightingsListener() {
+                @Override
+                public void gotSightings(ArrayList<Sighting> sightings) {
+                    Log.i("DuckClient", "Got " + sightings.size() + " sightings!");
+                }
+
+                @Override
+                public void gotError(String msg) {
+                    // TODO: Inform user
+                    Log.e("DuckClient", "Sightings getting failed with error: " + msg);
+                }
+            });
+
         } catch (IOException e) {
             Log.e("DuckClient", "Getting species failed!");
         }
