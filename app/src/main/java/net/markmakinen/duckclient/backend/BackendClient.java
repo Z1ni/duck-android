@@ -39,6 +39,7 @@ import java.util.ArrayList;
 public class BackendClient {
 
     private URI backendURI;
+    private ArrayList<Species> allowedSpecies;
 
     /**
      * BackendClient constructor
@@ -48,6 +49,7 @@ public class BackendClient {
     public BackendClient(URI backendURI) throws InvalidParameterException {
         if (backendURI == null) throw new InvalidParameterException("Invalid backend URI!");
         this.backendURI = backendURI;
+        this.allowedSpecies = new ArrayList<>();
     }
 
     /**
@@ -94,6 +96,8 @@ public class BackendClient {
                 // The backend returns a list, so we tell Gson to deserialize a list of Species objects
                 Type speciesList = new TypeToken<ArrayList<Species>>(){}.getType();
                 ArrayList<Species> species = gson.fromJson(s, speciesList);
+
+                allowedSpecies = species;   // Remember allowed species
 
                 if (listener != null) listener.gotSpecies(species);
             }
