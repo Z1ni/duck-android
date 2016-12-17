@@ -4,7 +4,7 @@ package net.markmakinen.duckclient.model;
  * Created by Zini on 16.12.2016 19.41.
  */
 
-import org.joda.time.LocalDateTime;
+import org.joda.time.DateTime;
 
 /**
  * Class for representing a sighting
@@ -12,7 +12,7 @@ import org.joda.time.LocalDateTime;
 public class Sighting {
 
     private transient String id;
-    private LocalDateTime dateTime;
+    private DateTime dateTime;
     private String description;
     private Species species;
     private int count;
@@ -30,7 +30,7 @@ public class Sighting {
      * Sighting datetime
      * @return Datetime
      */
-    public LocalDateTime getDateTime() {
+    public DateTime getDateTime() {
         return this.dateTime;
     }
 
@@ -66,7 +66,7 @@ public class Sighting {
      * @param species Species
      * @param count Duck count
      */
-    public Sighting(String id, LocalDateTime dateTime, String description, Species species, int count) {
+    public Sighting(String id, DateTime dateTime, String description, Species species, int count) {
         this.id = id;
         this.dateTime = dateTime;
         this.description = description;

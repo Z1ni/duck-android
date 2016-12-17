@@ -14,7 +14,8 @@ import com.google.gson.reflect.TypeToken;
 import net.markmakinen.duckclient.model.Sighting;
 import net.markmakinen.duckclient.model.Species;
 
-import org.joda.time.LocalDateTime;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
 
 import java.io.BufferedInputStream;
@@ -88,9 +89,7 @@ public class BackendClient {
                 }
 
                 // Create Gson instance for deserializing
-                GsonBuilder gsonBuilder = new GsonBuilder();
-                gsonBuilder.registerTypeAdapter(LocalDateTime.class, new DateTimeDeserializer());   // Register custom dateTime deserializer
-                Gson gson = gsonBuilder.create();
+                Gson gson = new Gson();
 
                 // Deserialize into Species objects
                 // The backend returns a list, so we tell Gson to deserialize a list of Species objects
@@ -144,7 +143,7 @@ public class BackendClient {
                 // Create Gson instance for deserializing
                 GsonBuilder gsonBuilder = new GsonBuilder();
                 gsonBuilder.registerTypeAdapter(Species.class, new SpeciesDeserializer());  // Register custom species deserializer
-                gsonBuilder.registerTypeAdapter(LocalDateTime.class, new DateTimeDeserializer());   // Register custom dateTime deserializer
+                gsonBuilder.registerTypeAdapter(DateTime.class, new DateTimeDeserializer());   // Register custom dateTime deserializer
                 Gson gson = gsonBuilder.create();
 
                 Type sightingsList = new TypeToken<ArrayList<Sighting>>(){}.getType();
@@ -199,9 +198,9 @@ public class BackendClient {
     /**
      * Custom deserializer for dateTime field "YYYY-MM-DD'T'HH:MM:SS'Z'"
      */
-    private class DateTimeDeserializer implements JsonDeserializer<LocalDateTime> {
-        public LocalDateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            return LocalDateTime.parse(json.getAsJsonPrimitive().getAsString(), ISODateTimeFormat.dateTimeNoMillis());
+    private class DateTimeDeserializer implements JsonDeserializer<DateTime> {
+        public DateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            return new DateTime(json.getAsJsonPrimitive().getAsString(), DateTimeZone.UTC);
         }
     }
 
