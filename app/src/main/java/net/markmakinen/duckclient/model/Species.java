@@ -36,4 +36,15 @@ public class Species {
         this.name = name;
     }
 
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Species)) return false;
+        Species s = (Species)obj;
+        return (name.equals(s.name));
+    }
 }
