@@ -11,7 +11,7 @@ import org.joda.time.LocalDateTime;
  */
 public class Sighting {
 
-    private String id;
+    private transient String id;
     private LocalDateTime dateTime;
     private String description;
     private Species species;
