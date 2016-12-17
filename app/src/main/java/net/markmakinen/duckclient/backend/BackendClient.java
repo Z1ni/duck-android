@@ -9,6 +9,9 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
 
 import net.markmakinen.duckclient.model.Sighting;
@@ -19,10 +22,14 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -56,9 +63,8 @@ public class BackendClient {
     /**
      * Gets list of Species from the backend
      * @param listener Listener to notify
-     * @throws IOException if data retrieval failed
      */
-    public void getSpecies(final GotSpeciesListener listener) throws IOException {
+    public void getSpecies(final GotSpeciesListener listener) {
 
         // Get the data asynchronously
         class DataGetter extends AsyncTask<Void, Void, String> {
@@ -110,9 +116,8 @@ public class BackendClient {
     /**
      * Gets list of Sightings from the backend
      * @param listener Listener to notify
-     * @throws IOException if data retrieval failed
      */
-    public void getSightings(final GotSightingsListener listener) throws IOException {
+    public void getSightings(final GotSightingsListener listener) {
 
         // Get the data asynchronously
         class DataGetter extends AsyncTask<Void, Void, String> {
@@ -158,6 +163,69 @@ public class BackendClient {
     }
 
     /**
+     * Sends a new sighting to the backend to save
+     * @param sighting Sighting to save
+     * @param listener Listener to notify
+     */
+    public void saveSighting(final Sighting sighting, final SightingSaveListener listener) {
+
+        // Check if we have species listing from the backend
+        if (allowedSpecies.size() == 0) {
+            // Need to get species listing before continuing
+            // TODO: Not implemented here, now we just assume that we have loaded species information before trying to save any
+            if (listener != null) listener.saveFailed("Get species before saving a new sighting!");
+            return;
+        }
+
+        // Check that the Species is allowed
+        boolean allowed = false;
+        Species specToSave = sighting.getSpecies();
+        for (Species s : allowedSpecies) {
+            if (s.equals(specToSave)) {
+                allowed = true;
+                break;
+            }
+        }
+        if (!allowed) {
+            if (listener != null) listener.saveFailed("Backend does not support species \"" + specToSave.getName() + "\"!");
+            return;
+        }
+
+        // Send data asynchronously
+        class DataSaver extends AsyncTask<Void, Void, Void> {
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+
+                GsonBuilder gsonBuilder = new GsonBuilder();
+                gsonBuilder.registerTypeAdapter(Species.class, new SpeciesSerializer());    // Register custom species serializer
+                gsonBuilder.registerTypeAdapter(DateTime.class, new DateTimeSerializer()); // Register custom dateTime serializer
+                Gson gson = gsonBuilder.create();
+
+                String sightingJson = gson.toJson(sighting);
+
+                Log.d("BackendClient", "Created sighting JSON:");
+                Log.d("BackendClient", sightingJson);
+
+                try {
+                    postData("/sightings", sightingJson);
+                } catch (IOException e) {
+                    Log.e("BackendClient", "Sighting POST failed: " + e.getMessage());
+                    if (listener != null) listener.saveFailed("Sighting save failed!");
+                    return null;
+                }
+
+                if (listener != null) listener.saveCompleted();
+                return null;
+            }
+        }
+
+        // Create and execute AsyncTask
+        DataSaver ds = new DataSaver();
+        ds.execute();
+    }
+
+    /**
      * Performs a HTTP GET and returns the data as a String
      * @param path Path when the backend URL is the root
      * @throws IOException if getting data failed
@@ -175,7 +243,7 @@ public class BackendClient {
             URL reqURL = reqURI.toURL();
             conn = (HttpURLConnection)reqURL.openConnection();
 
-            // Specify that we want JSON data
+            // Specify that we want JSON data. Not really needed, but doesn't hurt
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setConnectTimeout(5000);
 
@@ -196,11 +264,70 @@ public class BackendClient {
     }
 
     /**
+     * Performs a HTTP POST with given data
+     * @param path Path when the backend URL is the root
+     * @param data Data to send
+     * @throws IOException if data sending failed
+     */
+    private void postData(String path, String data) throws IOException {
+
+        // Combine root URI and given path
+        URI reqURI = backendURI.resolve(path);
+
+        HttpURLConnection conn = null;
+
+        try {
+            URL reqURL = reqURI.toURL();
+            conn = (HttpURLConnection)reqURL.openConnection();
+
+            // Set connection parameters, we're POSTing stuff here
+            conn.setRequestMethod("POST");
+            conn.setConnectTimeout(5000);
+            conn.setDoOutput(true);
+            conn.setRequestProperty("Content-Type", "application/json");
+
+            // Get output stream
+            OutputStream out = new BufferedOutputStream(conn.getOutputStream());
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, "UTF-8"));
+
+            // Write data
+            writer.write(data);
+            writer.flush();
+            writer.close();
+
+            int respCode = conn.getResponseCode();
+            if (respCode == -1 || respCode != HttpURLConnection.HTTP_OK) {
+                throw new IOException("Server responded with error: " + conn.getResponseMessage());
+            }
+        } finally {
+            if (conn != null) conn.disconnect();
+        }
+    }
+
+    /**
+     * Custom serializer for dateTime
+     */
+    private class DateTimeSerializer implements JsonSerializer<DateTime> {
+        public JsonElement serialize(DateTime dt, Type typeOfSrc, JsonSerializationContext context) {
+            return new JsonPrimitive(dt.toString(ISODateTimeFormat.dateTimeNoMillis()));
+        }
+    }
+
+    /**
      * Custom deserializer for dateTime field "YYYY-MM-DD'T'HH:MM:SS'Z'"
      */
     private class DateTimeDeserializer implements JsonDeserializer<DateTime> {
         public DateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             return new DateTime(json.getAsJsonPrimitive().getAsString(), DateTimeZone.UTC);
+        }
+    }
+
+    /**
+     * Custom serializer for species
+     */
+    private class SpeciesSerializer implements JsonSerializer<Species> {
+        public JsonElement serialize(Species species, Type typeOfSrc, JsonSerializationContext context) {
+            return new JsonPrimitive(species.getName());
         }
     }
 
