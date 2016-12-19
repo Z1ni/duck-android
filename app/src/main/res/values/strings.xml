@@ -4,7 +4,14 @@
     <!-- For the sighting listing list item / e.g. "3 mallards" -->
     <string name="sighting_item_count_species">%1$d %2$s</string>
 
-    <string name="species_get_failed">Couldn\'t get species!</string>
-    <string name="sightings_get_failed">Couldn\'t get sightings!</string>
+    <string name="species_get_failed">Couldn\'t get species: %1$s</string>
+    <string name="sightings_get_failed">Couldn\'t get sightings: %1$s</string>
     <string name="sightings_updated">Sightings updated</string>
+
+    <string name="save_new_sighting">Save</string>
+    <string name="new_sighting_title">New Sighting</string>
+    <string name="new_sighting_save_successful">New sighting saved!</string>
+    <string name="new_sighting_save_failed">Sighting saving failed: %1$s</string>
+    <string name="new_sighting_count_empty">Count must be given</string>
+    <string name="new_sighting_count_zero">Count can\'t be zero</string>
 </resources>

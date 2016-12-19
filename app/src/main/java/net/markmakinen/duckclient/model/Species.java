@@ -4,12 +4,14 @@ package net.markmakinen.duckclient.model;
  * Created by Zini on 16.12.2016 19.39.
  */
 
+import com.google.gson.annotations.Expose;
+
 /**
  * Class for representing Species
  */
 public class Species {
 
-    private String name;
+    @Expose private String name;
 
     // Getter & setter
     /**
@@ -46,5 +48,10 @@ public class Species {
         if (!(obj instanceof Species)) return false;
         Species s = (Species)obj;
         return (name.equals(s.name));
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }
