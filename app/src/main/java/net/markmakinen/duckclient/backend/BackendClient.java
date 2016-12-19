@@ -95,7 +95,9 @@ public class BackendClient {
                 }
 
                 // Create Gson instance for deserializing
-                Gson gson = new Gson();
+                GsonBuilder gsonBuilder = new GsonBuilder();
+                gsonBuilder.excludeFieldsWithoutExposeAnnotation();
+                Gson gson = gsonBuilder.create();
 
                 // Deserialize into Species objects
                 // The backend returns a list, so we tell Gson to deserialize a list of Species objects
@@ -149,6 +151,7 @@ public class BackendClient {
                 GsonBuilder gsonBuilder = new GsonBuilder();
                 gsonBuilder.registerTypeAdapter(Species.class, new SpeciesDeserializer());  // Register custom species deserializer
                 gsonBuilder.registerTypeAdapter(DateTime.class, new DateTimeDeserializer());   // Register custom dateTime deserializer
+                gsonBuilder.excludeFieldsWithoutExposeAnnotation();
                 Gson gson = gsonBuilder.create();
 
                 Type sightingsList = new TypeToken<ArrayList<Sighting>>(){}.getType();
@@ -200,6 +203,7 @@ public class BackendClient {
                 GsonBuilder gsonBuilder = new GsonBuilder();
                 gsonBuilder.registerTypeAdapter(Species.class, new SpeciesSerializer());    // Register custom species serializer
                 gsonBuilder.registerTypeAdapter(DateTime.class, new DateTimeSerializer()); // Register custom dateTime serializer
+                gsonBuilder.excludeFieldsWithoutExposeAnnotation();
                 Gson gson = gsonBuilder.create();
 
                 String sightingJson = gson.toJson(sighting);

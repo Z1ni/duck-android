@@ -4,6 +4,8 @@ package net.markmakinen.duckclient.model;
  * Created by Zini on 16.12.2016 19.41.
  */
 
+import com.google.gson.annotations.Expose;
+
 import org.joda.time.DateTime;
 
 /**
@@ -11,11 +13,11 @@ import org.joda.time.DateTime;
  */
 public class Sighting {
 
-    private transient String id;
-    private DateTime dateTime;
-    private String description;
-    private Species species;
-    private int count;
+    @Expose(serialize = false) private String id;
+    @Expose private DateTime dateTime;
+    @Expose private String description;
+    @Expose private Species species;
+    @Expose private int count;
 
     // Getters
     /**
