@@ -36,14 +36,19 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
+/**
+ * The Main Activity of the Application
+ */
 public class MainActivity extends AppCompatActivity {
 
-    private SightingArrayAdapter saa;
-    private BackendClient bc;
-    private SwipeRefreshLayout refreshLayout;
-    private boolean userRefresh = false;
-    private ArrayList<Species> allowedSpecies;
+    private SightingArrayAdapter saa;                   // Custom ArrayAdapter for Sightings
+    private BackendClient bc;                           // Backend client instance
+    private SwipeRefreshLayout refreshLayout;           // Layout containing the ListView
+    private boolean userRefresh = false;                // True if the refresh was done by the user
+    private ArrayList<Species> allowedSpecies;          // List of allowed species; comes from the backend
+    private boolean currentSortingAscending = false;    // Defaults to descending; greater dates are on top of the listing
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +66,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 showCreateNewSightingDialog(allowedSpecies);
+            }
+        });
+
+        // Floating sorting button
+        FloatingActionButton fabSort = (FloatingActionButton)findViewById(R.id.sortActionButton);
+        fabSort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                currentSortingAscending = !currentSortingAscending;
+                sortSightings(currentSortingAscending);
             }
         });
 
@@ -99,6 +114,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * Sorts the Sighting listing by datetime ascending or descending
+     * @param ascending true if sorting must be ascending, false if descending
+     */
+    private void sortSightings(final boolean ascending) {
+        saa.sort(new Comparator<Sighting>() {
+            @Override
+            public int compare(Sighting a, Sighting b) {
+                if (ascending) return a.getDateTime().compareTo(b.getDateTime());
+                return b.getDateTime().compareTo(a.getDateTime());
+            }
+        });
+    }
+
+    /**
      * Refreshes the Sighting listing
      */
     private void refreshSightings() {
@@ -127,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
                                 Log.i("DuckClient", "Got " + sightings.size() + " sightings!");
                                 saa.clear();
                                 saa.addAll(sightings);
+                                sortSightings(currentSortingAscending);
                                 refreshLayout.setRefreshing(false);
                                 if (userRefresh) Snackbar.make(refreshLayout, R.string.sightings_updated, Snackbar.LENGTH_SHORT).show();
                                 userRefresh = false;
@@ -211,6 +241,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Populate Date and Time fields
         LocalDateTime now = LocalDateTime.now();
+        newSighting.setDateTime(now.toDateTime().withZone(DateTimeZone.UTC));
         dateView.setText(DateTimeFormat.fullDate().print(now));
         timeView.setText(DateTimeFormat.fullTime().print(now));
 
