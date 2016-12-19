@@ -127,22 +127,6 @@ public class Sighting {
         return shortDesc;
     }
 
-    /**
-     * Creates a new Sighting
-     * @param id ID for this Sighting, can and must be null if creating a new one
-     * @param dateTime Date and time of the sighting
-     * @param description Descriptive text
-     * @param species Species
-     * @param count Duck count
-     */
-    public Sighting(String id, DateTime dateTime, String description, Species species, int count) {
-        this.id = id;
-        this.dateTime = dateTime;
-        this.description = description;
-        this.species = species;
-        this.count = count;
-    }
-
     public Sighting() {}
 
 }
