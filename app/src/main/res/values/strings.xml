@@ -3,4 +3,8 @@
 
     <!-- For the sighting listing list item / e.g. "3 mallards" -->
     <string name="sighting_item_count_species">%1$d %2$s</string>
+
+    <string name="species_get_failed">Couldn\'t get species!</string>
+    <string name="sightings_get_failed">Couldn\'t get sightings!</string>
+    <string name="sightings_updated">Sightings updated</string>
 </resources>

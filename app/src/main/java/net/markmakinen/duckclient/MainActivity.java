@@ -1,5 +1,6 @@
 package net.markmakinen.duckclient;
 
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private SightingArrayAdapter saa;
     private BackendClient bc;
     private SwipeRefreshLayout refreshLayout;
+    private boolean userRefresh = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onRefresh() {
                 // User wants to refresh the list
+                userRefresh = true;
                 refreshSightings();
             }
         });
@@ -74,13 +77,16 @@ public class MainActivity extends AppCompatActivity {
                         saa.clear();
                         saa.addAll(sightings);
                         refreshLayout.setRefreshing(false);
+                        if (userRefresh) Snackbar.make(refreshLayout, R.string.sightings_updated, Snackbar.LENGTH_SHORT).show();
+                        userRefresh = false;
                     }
 
                     // Couldn't get sightings
                     @Override
                     public void gotError(String msg) {
-                        // TODO: Inform user
                         refreshLayout.setRefreshing(false);
+                        Snackbar.make(refreshLayout, R.string.sightings_get_failed, Snackbar.LENGTH_LONG).show();
+                        userRefresh = false;
                     }
                 });
             }
@@ -88,9 +94,10 @@ public class MainActivity extends AppCompatActivity {
             // Couldn't get species
             @Override
             public void gotError(String msg) {
-                // TODO: Inform user
                 Log.e("DuckClient", "Species getting failed with error: " + msg);
                 refreshLayout.setRefreshing(false);
+                Snackbar.make(refreshLayout, R.string.species_get_failed, Snackbar.LENGTH_LONG).show();
+                userRefresh = false;
             }
         });
     }
