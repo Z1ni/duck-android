@@ -194,6 +194,11 @@ public class BackendClient {
             return;
         }
 
+        if (sighting.getCount() <= 0) {
+            listener.saveFailed("Duck count can't be lower than or equals to 0!");
+            return;
+        }
+
         // Send data asynchronously
         class DataSaver extends AsyncTask<Void, Void, Void> {
 
