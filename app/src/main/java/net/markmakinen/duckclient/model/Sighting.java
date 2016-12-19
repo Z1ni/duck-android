@@ -7,6 +7,9 @@ package net.markmakinen.duckclient.model;
 import com.google.gson.annotations.Expose;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
+import org.joda.time.format.DateTimeFormat;
 
 /**
  * Class for representing a sighting
@@ -58,6 +61,38 @@ public class Sighting {
      */
     public int getCount() {
         return this.count;
+    }
+
+    /**
+     * String containing formatted count and species name
+     * @return Formatted string
+     */
+    public String getCountAndSpeciesText() {
+        String speciesName = species.getName();
+        speciesName += (count > 1 ? "s" : ""); // Add 's' to the end to pluralize
+        return String.format("%d %s", count, speciesName);
+    }
+
+    /**
+     * String containing sighting date and time
+     * @return Formatted string
+     */
+    public String getDateTimeText() {
+        // Format date/time according to system locale
+        LocalDateTime local = dateTime.withZone(DateTimeZone.getDefault()).toLocalDateTime();
+        return DateTimeFormat.fullDateTime().print(local);
+    }
+
+    /**
+     * Short description of the sighting. Has ellipsis if the description is too long.
+     * @return Short description
+     */
+    public String getShortDescription() {
+        // Create short description text
+        // Add our own ellipsis just in case (even though we set the TextView to do this automatically)
+        String shortDesc = description.substring(0, Math.min(description.length(), 254));
+        if (shortDesc.length() >= 254) shortDesc += "...";
+        return shortDesc;
     }
 
     /**
