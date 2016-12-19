@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:paddingLeft="?attr/dialogPreferredPadding"
+    android:paddingRight="?attr/dialogPreferredPadding">
+
+    <TextView
+        android:text="2016/12/12 12:12:12"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/sightingInfoDatetime"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:text="Very very long description text in the long view. This does fit on the screen, because it's allowed to be a looooooooong text and it has more space to use!"
+        android:layout_width="match_parent"
+        android:id="@+id/sightingInfoDescription"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:layout_below="@+id/sightingInfoDatetime"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="8dp" />
+</RelativeLayout>
