@@ -10,6 +10,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 /**
  * Class for representing a sighting
@@ -112,7 +113,14 @@ public class Sighting {
     public String getDateTimeText() {
         // Format date/time according to system locale
         LocalDateTime local = dateTime.withZone(DateTimeZone.getDefault()).toLocalDateTime();
-        return DateTimeFormat.fullDateTime().print(local);
+        String s;
+        // Some locales (such as fi_FI) don't support 'c' pattern letter, so we roll our own pattern for those situations
+        try {
+            s = DateTimeFormat.fullDateTime().print(local);
+        } catch (IllegalArgumentException e) {
+            s = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").print(local);
+        }
+        return s;
     }
 
     /**
