@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
                     public void gotSightings(ArrayList<Sighting> sightings) {
                         // Populate the Sighting ListView
                         Log.i("DuckClient", "Got " + sightings.size() + " sightings!");
+                        saa.clear();
                         saa.addAll(sightings);
                         refreshLayout.setRefreshing(false);
                     }

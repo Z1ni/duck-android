@@ -17,6 +17,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/sightingListView" />
+        android:id="@+id/sightingListView"
+        android:layoutAnimation="@anim/sighting_layout_anim" />
 
 </android.support.v4.widget.SwipeRefreshLayout>
