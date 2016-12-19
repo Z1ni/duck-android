@@ -1,5 +1,6 @@
 package net.markmakinen.duckclient;
 
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,6 +17,8 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     private SightingArrayAdapter saa;
+    private BackendClient bc;
+    private SwipeRefreshLayout refreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,15 +28,38 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
+        // Initialize SwipeRefreshLayout
+        refreshLayout = (SwipeRefreshLayout)findViewById(R.id.activity_main);
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // User wants to refresh the list
+                refreshSightings();
+            }
+        });
+
         // Initialize Sighting ListView
         saa = new SightingArrayAdapter(this, new ArrayList<Sighting>());
         ListView sightingListView = (ListView)findViewById(R.id.sightingListView);
         sightingListView.setAdapter(saa);
 
         // Create a new BackendClient instance
-        final BackendClient bc = new BackendClient(DuckClient.backendURI);
+        bc = new BackendClient(DuckClient.backendURI);
 
         // Get species from the server
+        refreshSightings();
+
+    }
+
+    /**
+     * Refreshes the Sighting listing
+     */
+    private void refreshSightings() {
+
+        if (refreshLayout == null || bc == null) return;
+
+        refreshLayout.setRefreshing(true);
+
         bc.getSpecies(new GotSpeciesListener() {
             @Override
             public void gotSpecies(ArrayList<Species> species) {
@@ -46,12 +72,14 @@ public class MainActivity extends AppCompatActivity {
                         // Populate the Sighting ListView
                         Log.i("DuckClient", "Got " + sightings.size() + " sightings!");
                         saa.addAll(sightings);
+                        refreshLayout.setRefreshing(false);
                     }
 
                     // Couldn't get sightings
                     @Override
                     public void gotError(String msg) {
                         // TODO: Inform user
+                        refreshLayout.setRefreshing(false);
                     }
                 });
             }
@@ -61,8 +89,8 @@ public class MainActivity extends AppCompatActivity {
             public void gotError(String msg) {
                 // TODO: Inform user
                 Log.e("DuckClient", "Species getting failed with error: " + msg);
+                refreshLayout.setRefreshing(false);
             }
         });
-
     }
 }
