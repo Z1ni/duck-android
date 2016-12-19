@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import net.markmakinen.duckclient.model.Sighting;
 
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 
 import java.util.ArrayList;
@@ -52,7 +54,8 @@ public class SightingArrayAdapter extends ArrayAdapter<Sighting> {
                 count, speciesName);
 
         // Format date/time according to system locale
-        String dateTimeStr = DateTimeFormat.fullDateTime().print(sighting.getDateTime());
+        LocalDateTime local = sighting.getDateTime().withZone(DateTimeZone.getDefault()).toLocalDateTime();
+        String dateTimeStr = DateTimeFormat.fullDateTime().print(local);
 
         // Create short description text
         // Add our own ellipsis just in case (even though we set the TextView to do this automatically)
