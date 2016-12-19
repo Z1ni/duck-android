@@ -342,6 +342,7 @@ public class MainActivity extends AppCompatActivity {
 
         DateTime selected;
         SightingDateTimeSetListener listener;
+        boolean selectionComplete = false;
 
         /**
          * Constructor
@@ -356,6 +357,7 @@ public class MainActivity extends AppCompatActivity {
             final DateTime now = DateTime.now();
 
             // Create and show DatePickerDialog
+            selectionComplete = false;
             DatePickerDialog dpd = new DatePickerDialog(MainActivity.this, new DatePickerDialog.OnDateSetListener() {
                 @Override
                 public void onDateSet(DatePicker datePicker, final int year, final int month, final int dayOfMonth) {
@@ -369,11 +371,15 @@ public class MainActivity extends AppCompatActivity {
                             selected = new DateTime(year, month+1, dayOfMonth, hours, minutes, DateTimeZone.getDefault());
                             selected = selected.withZone(DateTimeZone.UTC); // Use UTC instead of local timezone
                             Log.i("onTimeSet", "Datetime: " + selected.toString());
+                            selectionComplete = true;
 
                             if (listener != null) listener.dateTimeSet(selected);   // Notify the listener
                         }
                     }, now.getHourOfDay(), now.getMinuteOfHour(), true);
-                    tpd.show();
+                    if (!selectionComplete) {
+                        selectionComplete = true;
+                        tpd.show();
+                    }
 
                 }
             }, now.getYear(), now.getMonthOfYear()-1, now.getDayOfMonth());
