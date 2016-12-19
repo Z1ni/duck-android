@@ -22,7 +22,7 @@ public class Sighting {
     @Expose private Species species;
     @Expose private int count;
 
-    // Getters
+    // Getters and setters
     /**
      * Server-side Sighting ID
      * @return Sighting ID
@@ -40,11 +40,27 @@ public class Sighting {
     }
 
     /**
+     * Sighting datetime
+     * @param dateTime Datetime to set
+     */
+    public void setDateTime(DateTime dateTime) {
+        this.dateTime = dateTime;
+    }
+
+    /**
      * Description of the sighting
      * @return Description
      */
     public String getDescription() {
         return this.description;
+    }
+
+    /**
+     * Description of the sighting
+     * @param description Description to set
+     */
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     /**
@@ -56,11 +72,27 @@ public class Sighting {
     }
 
     /**
+     * Species of the sighting
+     * @param species Species to set
+     */
+    public void setSpecies(Species species) {
+        this.species = species;
+    }
+
+    /**
      * Amount of ducks in this sighting
      * @return Duck count
      */
     public int getCount() {
         return this.count;
+    }
+
+    /**
+     * Amount of ducks in this sighting
+     * @param count Duck count to set
+     */
+    public void setCount(int count) {
+        this.count = count;
     }
 
     /**
@@ -110,5 +142,7 @@ public class Sighting {
         this.species = species;
         this.count = count;
     }
+
+    public Sighting() {}
 
 }
