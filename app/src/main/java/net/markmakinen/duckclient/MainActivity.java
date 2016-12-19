@@ -3,6 +3,7 @@ package net.markmakinen.duckclient;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ListView;
 
 import net.markmakinen.duckclient.backend.BackendClient;
 import net.markmakinen.duckclient.backend.GotSightingsListener;
@@ -10,50 +11,58 @@ import net.markmakinen.duckclient.backend.GotSpeciesListener;
 import net.markmakinen.duckclient.model.Sighting;
 import net.markmakinen.duckclient.model.Species;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+
+    private SightingArrayAdapter saa;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (DuckClient.backendURI == null) finish();
+        if (DuckClient.backendURI == null) finish();    // Close the app if the backend URI was invalid
 
         setContentView(R.layout.activity_main);
 
-        BackendClient bc = new BackendClient(DuckClient.backendURI);
-        try {
-            bc.getSpecies(new GotSpeciesListener() {
-                @Override
-                public void gotSpecies(ArrayList<Species> species) {
-                    Log.i("DuckClient", "Got " + species.size() + " species!");
-                }
+        // Initialize Sighting ListView
+        saa = new SightingArrayAdapter(this, new ArrayList<Sighting>());
+        ListView sightingListView = (ListView)findViewById(R.id.sightingListView);
+        sightingListView.setAdapter(saa);
 
-                @Override
-                public void gotError(String msg) {
-                    // TODO: Inform user
-                    Log.e("DuckClient", "Species getting failed with error: " + msg);
-                }
-            });
+        // Create a new BackendClient instance
+        final BackendClient bc = new BackendClient(DuckClient.backendURI);
 
-            bc.getSightings(new GotSightingsListener() {
-                @Override
-                public void gotSightings(ArrayList<Sighting> sightings) {
-                    Log.i("DuckClient", "Got " + sightings.size() + " sightings!");
-                }
+        // Get species from the server
+        bc.getSpecies(new GotSpeciesListener() {
+            @Override
+            public void gotSpecies(ArrayList<Species> species) {
+                Log.i("DuckClient", "Got " + species.size() + " species!");
 
-                @Override
-                public void gotError(String msg) {
-                    // TODO: Inform user
-                    Log.e("DuckClient", "Sightings getting failed with error: " + msg);
-                }
-            });
+                // Get sightings
+                bc.getSightings(new GotSightingsListener() {
+                    @Override
+                    public void gotSightings(ArrayList<Sighting> sightings) {
+                        // Populate the Sighting ListView
+                        Log.i("DuckClient", "Got " + sightings.size() + " sightings!");
+                        saa.addAll(sightings);
+                    }
 
-        } catch (IOException e) {
-            Log.e("DuckClient", "Getting species failed!");
-        }
+                    // Couldn't get sightings
+                    @Override
+                    public void gotError(String msg) {
+                        // TODO: Inform user
+                    }
+                });
+            }
+
+            // Couldn't get species
+            @Override
+            public void gotError(String msg) {
+                // TODO: Inform user
+                Log.e("DuckClient", "Species getting failed with error: " + msg);
+            }
+        });
 
     }
 }

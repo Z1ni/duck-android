@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="5dp">
+
+    <TextView
+        android:text="n species"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/sightingCountSpecies"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+    <TextView
+        android:text="2016/12/12 12:12:12"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/sightingDate"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+
+    <TextView
+        android:text="Very very long description text in the short view. This doesn't fit on the screen, at least not in portrait mode"
+        android:layout_width="match_parent"
+        android:id="@+id/sightingShortDescription"
+        android:layout_height="wrap_content"
+        android:lines="1"
+        android:ellipsize="end"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+</LinearLayout>
