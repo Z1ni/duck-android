@@ -78,7 +78,7 @@ public class BackendClient {
                     resp = getRawText("/species");  // Get textual response
                 } catch (IOException e) {
                     Log.e("BackendClient", "getRawText failed: " + e.getMessage());
-                    errorMsg = "Data getting failed!";
+                    errorMsg = e.getMessage();
                     e.printStackTrace();
                 }
                 return resp;
@@ -132,7 +132,7 @@ public class BackendClient {
                     resp = getRawText("/sightings");
                 } catch (IOException e) {
                     Log.e("BackendClient", "getRawText failed: " + e.getMessage());
-                    errorMsg = "Data getting failed!";
+                    errorMsg = e.getMessage();
                     e.printStackTrace();
                 }
                 return resp;
@@ -220,7 +220,7 @@ public class BackendClient {
                     postData("/sightings", sightingJson);
                 } catch (IOException e) {
                     Log.e("BackendClient", "Sighting POST failed: " + e.getMessage());
-                    if (listener != null) listener.saveFailed("Sighting save failed!");
+                    if (listener != null) listener.saveFailed(e.getMessage());
                     return null;
                 }
 
