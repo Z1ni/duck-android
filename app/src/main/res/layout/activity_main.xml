@@ -40,29 +40,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
+        android:layout_marginBottom="19dp"
+        android:layout_marginRight="12dp"
         android:src="@drawable/ic_add_black_24dp" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/invisibleHackButton"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        android:layout_gravity="top|end"
-        android:layout_margin="16dp"
-        android:visibility="invisible"
-        app:layout_anchor="@id/actionButton"
-        app:layout_anchorGravity="top"
-        android:src="@drawable/ic_sort_by_alpha_black_24px" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/sortActionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|end"
-        android:layout_margin="16dp"
-        app:layout_anchor="@id/invisibleHackButton"
-        app:layout_anchorGravity="top"
+        app:layout_anchor="@id/actionButton"
+        app:layout_anchorGravity="right|end"
         app:backgroundTint="@android:color/darker_gray"
+        app:useCompatPadding="true"
         android:src="@drawable/ic_sort_by_alpha_black_24px" />
 
 </android.support.design.widget.CoordinatorLayout>
