@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean userRefresh = false;                // True if the refresh was done by the user
     private ArrayList<Species> allowedSpecies;          // List of allowed species; comes from the backend
     private boolean currentSortingAscending = false;    // Defaults to descending; greater dates are on top of the listing
+    private ListView sightingListView;                  // ListView containing the Sightings
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize Sighting ListView
         saa = new SightingArrayAdapter(this, new ArrayList<Sighting>());
-        ListView sightingListView = (ListView)findViewById(R.id.sightingListView);
+        sightingListView = (ListView)findViewById(R.id.sightingListView);
         sightingListView.setAdapter(saa);
 
         sightingListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -125,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
                 return b.getDateTime().compareTo(a.getDateTime());
             }
         });
+        sightingListView.startLayoutAnimation();
     }
 
     /**
