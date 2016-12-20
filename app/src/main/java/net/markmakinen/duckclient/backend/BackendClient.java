@@ -347,7 +347,6 @@ public class BackendClient {
         public Species deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             String name = json.getAsJsonPrimitive().getAsString();
             return new Species(name);   // Create new Species by name
-            // TODO: Check that the species is allowed
         }
     }
 
